@@ -1355,24 +1355,23 @@ extension CameraManager: AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     public func addVideoOutput() {
-        if let videoOutput = videoOutput,
+        guard let videoOutput = videoOutput,
             let connection = videoOutput.connection(with: AVMediaType.video),
-            connection.isActive {
-            return
+            connection.isActive else {
+                return
         }
         let newVideoOutput = AVCaptureVideoDataOutput()
         newVideoOutput.videoSettings = videoOutputSettings
         newVideoOutput.alwaysDiscardsLateVideoFrames = true
         newVideoOutput.setSampleBufferDelegate(self, queue: videoOutputQueue)
-        if let captureSession = captureSession {
-            if captureSession.canAddOutput(newVideoOutput) {
-                captureSession.beginConfiguration()
-                captureSession.addOutput(newVideoOutput)
-                // We want the buffers to be in portrait orientation otherwise they are
-                // rotated by 90 degrees. Need to set this _after_ addOutput()!
-                newVideoOutput.connection(with: AVMediaType.video)?.videoOrientation = .portrait
-                captureSession.commitConfiguration()
-            }
+        if let captureSession = captureSession,
+            captureSession.canAddOutput(newVideoOutput) {
+            captureSession.beginConfiguration()
+            captureSession.addOutput(newVideoOutput)
+            // We want the buffers to be in portrait orientation otherwise they are
+            // rotated by 90 degrees. Need to set this _after_ addOutput()!
+            newVideoOutput.connection(with: AVMediaType.video)?.videoOrientation = .portrait
+            captureSession.commitConfiguration()
         }
         self.videoOutput = newVideoOutput
     }
