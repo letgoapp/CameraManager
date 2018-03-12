@@ -215,15 +215,18 @@ open class CameraManager: NSObject, AVCaptureFileOutputRecordingDelegate, UIGest
     }()
     
     // MARK: - Core ML
-    public var pixelsBuffersToForwardPerSecond = 15
-    public var videoOutputSettings: [String : Any] =
-        [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32BGRA),
-         kCVPixelBufferWidthKey as String: NSNumber(value: 224),
-         kCVPixelBufferHeightKey as String: NSNumber(value: 224)]
-    fileprivate var videoOutput: AVCaptureVideoDataOutput?
-    fileprivate let videoOutputQueue = DispatchQueue(label: "camera.manager.video.output.queue")
+    public var pixelsBuffersToForwardPerSecond: Int = 15
+    public static var videoOutputWidth: Float = 224
+    public static var videoOutputHeight: Float = 224
+    private var videoOutputSettings: [String : Any] {
+        return [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32BGRA),
+                kCVPixelBufferWidthKey as String: NSNumber(value: CameraManager.videoOutputWidth),
+                kCVPixelBufferHeightKey as String: NSNumber(value: CameraManager.videoOutputHeight)]
+    }
+    private var videoOutput: AVCaptureVideoDataOutput?
+    private let videoOutputQueue = DispatchQueue(label: "camera.manager.video.output.queue")
     public weak var videoOutputDelegate: VideoCaptureDelegate?
-    fileprivate var videoOutputLastTimestamp = CMTime()
+    private var videoOutputLastTimestamp = CMTime()
     // MARK: -
     
     fileprivate var stillImageOutput: AVCaptureStillImageOutput?
