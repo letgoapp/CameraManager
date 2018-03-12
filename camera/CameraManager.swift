@@ -1358,10 +1358,10 @@ extension CameraManager: AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     public func addVideoOutput() {
-        guard let videoOutput = videoOutput,
+        if let videoOutput = videoOutput,
             let connection = videoOutput.connection(with: AVMediaType.video),
-            connection.isActive else {
-                return
+            connection.isActive {
+            return
         }
         let newVideoOutput = AVCaptureVideoDataOutput()
         newVideoOutput.videoSettings = videoOutputSettings
