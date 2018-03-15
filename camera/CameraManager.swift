@@ -1373,7 +1373,7 @@ extension CameraManager: AVCaptureVideoDataOutputSampleBufferDelegate {
             captureSession.addOutput(newVideoOutput)
             // We want the buffers to be in portrait orientation otherwise they are
             // rotated by 90 degrees. Need to set this _after_ addOutput()!
-            newVideoOutput.connection(with: AVMediaType.video)?.videoOrientation = .portrait
+//            newVideoOutput.connection(with: AVMediaType.video)?.videoOrientation = .portrait
             captureSession.commitConfiguration()
         }
         self.videoOutput = newVideoOutput
