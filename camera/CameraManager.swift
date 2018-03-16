@@ -828,6 +828,7 @@ open class CameraManager: NSObject, AVCaptureFileOutputRecordingDelegate, UIGest
                 captureSession.addOutput(newStillImageOutput)
                 captureSession.commitConfiguration()
             }
+            addVideoCaptureToSession(session: captureSession)
         }
         return newStillImageOutput
     }
@@ -994,6 +995,7 @@ open class CameraManager: NSObject, AVCaptureFileOutputRecordingDelegate, UIGest
                     if captureSession.canAddOutput(validStillImageOutput) {
                         captureSession.addOutput(validStillImageOutput)
                     }
+                    addVideoCaptureToSession(session: captureSession)
                 }
             }
         case .videoOnly, .videoWithMic:
@@ -1367,16 +1369,17 @@ extension CameraManager: AVCaptureVideoDataOutputSampleBufferDelegate {
         newVideoOutput.videoSettings = videoOutputSettings
         newVideoOutput.alwaysDiscardsLateVideoFrames = true
         newVideoOutput.setSampleBufferDelegate(self, queue: videoOutputQueue)
-        if let captureSession = captureSession,
-            captureSession.canAddOutput(newVideoOutput) {
-            captureSession.beginConfiguration()
-            captureSession.addOutput(newVideoOutput)
+        self.videoOutput = newVideoOutput
+    }
+    
+    private func addVideoCaptureToSession(session: AVCaptureSession) {
+        if let newVideoOutput = videoOutput,
+            session.canAddOutput(newVideoOutput) {
+            session.addOutput(newVideoOutput)
             // We want the buffers to be in portrait orientation otherwise they are
             // rotated by 90 degrees. Need to set this _after_ addOutput()!
-//            newVideoOutput.connection(with: AVMediaType.video)?.videoOrientation = .portrait
-            captureSession.commitConfiguration()
+            newVideoOutput.connection(with: AVMediaType.video)?.videoOrientation = .portrait
         }
-        self.videoOutput = newVideoOutput
     }
     
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
